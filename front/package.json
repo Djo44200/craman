@@ -1,0 +1,48 @@
+{
+  "name": "craman",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "test:unit": "vue-cli-service test:unit",
+    "test:e2e": "vue-cli-service test:e2e",
+    "lint": "vue-cli-service lint"
+  },
+  "dependencies": {
+    "@quasar/extras": "^1.0.0",
+    "axios": "^0.19.0",
+    "core-js": "^2.6.5",
+    "file-saver": "^2.0.2",
+    "moment": "^2.24.0",
+    "moment-jdateformatparser": "^1.2.1",
+    "quasar": "^1.0.0",
+    "vue": "^2.6.10",
+    "vue-axios": "^2.1.5",
+    "vue-router": "^3.0.3",
+    "vuex": "^3.0.1",
+    "xlsx": "^0.15.1"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "^3.12.0",
+    "@vue/cli-plugin-e2e-cypress": "^3.12.0",
+    "@vue/cli-plugin-eslint": "^3.12.0",
+    "@vue/cli-plugin-unit-jest": "^4.0.5",
+    "@vue/cli-service": "^3.12.0",
+    "@vue/test-utils": "1.0.0-beta.29",
+    "babel-core": "7.0.0-bridge.0",
+    "babel-eslint": "^10.0.1",
+    "babel-jest": "^25.0.0",
+    "babel-plugin-transform-imports": "1.5.0",
+    "eslint": "^5.16.0",
+    "eslint-plugin-vue": "^5.0.0",
+    "less": "^3.0.4",
+    "less-loader": "^5.0.0",
+    "postcss-rtl": "^1.2.3",
+    "stylus": "^0.54.5",
+    "stylus-loader": "^3.0.2",
+    "vue-cli-plugin-quasar": "^1.0.0",
+    "vue-template-compiler": "^2.6.10",
+    "vue2-simplert": "^1.0.0"
+  }
+}

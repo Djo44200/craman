@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context docBase="project_CRA" path="/project_CRA" reloadable="true"
+ source="org.eclipse.jst.jee.server:project_CRA">
+ 	<WatchedResource>WEB-INF/web.xml</WatchedResource>
+ 	
+ 	<!-- 
+ 		name=nom de la dataSource
+ 		driverClassName=nom packagé de la classe du driver utilisé
+ 		type=nom packagé de la classe dataSource
+ 		auth=conteneur receveur
+ 		url=url de connexion à la BDD
+ 		maxTotal=nombre maxi de connexions qui peuvent être allouées depuis le pool.
+ 		maxIdle=nombre maxi de connexion inactives qui peuvent être dans le pool de connexion 
+ 		maxWaitMillis=durée maxi d'attente pour l'obtention d'une connexion.
+ 		acceptCount=nombre maxi de commandes en attente de connexion.
+ 		removeAbandoned= activée la gestion des fuites de connexion
+ 		removeAbandonedTimeOut = nombre de secondes pour passer d'une connexion inactive à abandonnée. 
+ 	-->
+	<Resource
+		name="/project_CRA"
+		driverClassName="com.mysql.cj.jdbc.Driver"
+		type="javax.sql.DataSource"
+		auth="Container"
+		url="jdbc:mysql://localhost:3306/project_CRA?serverTimezone=UTC"
+		username="expandium" 
+		password="!Nantes44"
+		maxTotal="100"
+		maxIdle="50"
+		maxWaitMillis="10000"
+		removeAbandoned="true"
+		/>
+ 
+</Context>
