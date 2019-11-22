@@ -20,7 +20,9 @@ export default {
 
   // return a user
   getOneUser(idUser){
-    Api().get('/users/'+idUser);
+    Api().get('/users/'+idUser).then(response =>{
+      return response.data
+    });
 
   }
 

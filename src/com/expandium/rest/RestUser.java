@@ -1,6 +1,5 @@
 package com.expandium.rest;
 
-
 import java.net.URI;
 import java.util.ArrayList;
 
@@ -20,7 +19,6 @@ import javax.ws.rs.core.Response.Status;
 import com.expandium.beans.User;
 import com.expandium.dal.DALException;
 import com.expandium.dal.UserDAO;
-
 
 @Path("/users")
 public class RestUser {

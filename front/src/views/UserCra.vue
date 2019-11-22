@@ -23,19 +23,21 @@
 				:columns="columns"
 				:pagination.sync="pagination"
 				:filter="filter"
-				:filter-method="publicFilterProject"
+				:filter-method="filterProject"
 				row-key="name">
 				<template v-slot:top-left>
 					<p>{{title}}
-						<span class="bold">{{user.name }} {{user.firstName | toUpperCase}} </span>- {{currentMonthBtn}} {{currentYearBtn}} -
-						<span> Open days seized: {{totalQuartersInMonth}}/{{openDays}} </span>
+						<span class="bold">{{user.name }} {{user.firstName | toUpperCase}} </span></p>
+						<p>{{currentMonth}} {{currentYearChange}} -
+						Open days seized: {{totalQuartersInMonth}}/{{openDays}}</p>
 						<div class="q-gutter-md row">
 							<q-select
+							class="col-md col-4"
 							outlined
 							v-model="selectYear"
 							:options="[
-							{label: lastYear, value: lastYear, description: 'Last year', icon: 'map'},
-							{label: currentYear, value: currentYear, description: 'Current year', icon: 'map'}
+							{label: lastYear, value: lastYear, description: 'Last year'},
+							{label: currentYear, value: currentYear, description: 'Current year'}
 							]"
 							label="Year"
 							dense
@@ -46,10 +48,11 @@
 							</template>
 						</q-select>
 						<q-select
+						class="col-md col-6"
 						outlined
 						v-model="selectMonth"
 						:options="months"
-						@input="publicOnSelectionChanged($event)"
+						@input="onSelectionChanged($event)"
 						label="Month"
 						dense
 						:options-dense="denseOpts">
@@ -58,6 +61,7 @@
 						</template>
 					</q-select>
 					<q-input outlined autofocus borderless dense
+					class="col-md col-6"
 					debounce="300"
 					v-model="filter"
 					placeholder="Search">
@@ -65,7 +69,7 @@
 						<q-icon name="search" />
 					</template>
 				</q-input>
-				<q-btn color="primary" class="btn" :to="{name:'userList'}" label="Return"/>
+				<q-btn color="primary" class="btn col-md col-4" :to="{name:'userList'}" label="Return"/>
 			</div>
 		</template>
 		<template v-slot:body="props" :props="props">
@@ -78,8 +82,7 @@
 				v-bind:class="'color'+day.classStatus">
 				<div v-if="!day.holiday">
 					<q-input @input="(val) => OnQuarterChange(val, day.timestamp, props)"
-						debounce="1000"
-						@validate='(val) =>validate(val)'
+						debounce="500"
 						:error="errorValue" :error-message="errorMessageValue"
 						type="text" pattern="^\d*(\.\d{0,2})?$"
 						step="0.25" min="0" max="1" dense
@@ -96,6 +99,7 @@
 			</div>
 		</q-td>
 	</q-tr>
+
 </template>
 </q-table>
 </div>
@@ -141,13 +145,13 @@ export default {
 			filter: '',
 			openDays: 0,
 			title: 'Activity Report of ' ,
-			currentMonthBtn: '',
-			currentYearBtn : '',
+			currentMonth: '',
 			months: [],
+			currentYearChange : '',
 			lastYear: moment().year()-1,
 			currentYear: moment().year(),
 			pagination: {
-				rowsPerPage: 10 //  0 for all
+				rowsPerPage: 15//  0 for all
 			},
 			text: '',
 			schedule: [],
@@ -172,20 +176,22 @@ export default {
 		},
 	},
 	beforeCreate() {
+		// Loading all the teams and associated projects
 		this.$store.dispatch('searchAllTeamHisProject');
+		//Searching the current user
 		this.$store.dispatch('searchOneUser', this.$route.params.id);
 	},
 
 	beforeMount() {
-		// Initialize the table with the current month
+		// Initialize the table with the current month and year
 		let day  = moment().format('MM/YYYY');
 		this.daysArrayByMonthCal(day)
-		// List of months
-		this.publicListOfMonth();
+		// List of months for this select
+		this.listOfMonth();
 	},
 
 	updated(){
-		// init colors
+		// initialize colors for the table
 		this.controlQuarters();
 	},
 
@@ -195,7 +201,6 @@ export default {
 			const data = [];
 			const teams = this.teams;
 			const records = val;
-
 			// init from teams
 			for (let index = 0; teams && index < teams.length; index++) {
 				const team = teams[index];
@@ -214,8 +219,8 @@ export default {
 				data.push(element);
 			}
 			this.data = data;
-			// this.controlQuarters();
 		},
+		//Whenever a quarter changes
 		quarters : function(){
 			this.controlQuarters();
 		}
@@ -223,47 +228,35 @@ export default {
 	// Utils
 	methods: {
 		controlQuarters(){
-
+			// Change of classes
 			for (let index = 0; index < this.quarters.length; index++) {
 				for (let i = 0; i < this.schedule.length; i++) {
-
 					if (this.schedule[i].format('YYYY-MM-DD') === this.quarters[index].date) {
-
 						if (this.quarters[index].quarter > 1) {
-
 							this.schedule[i].classStatus = this.classStatus.NOT_OK;
 						} else if (this.quarters[index].quarter == 1) {
-
 							this.schedule[i].classStatus = this.classStatus.OK;
 						} else if (this.quarters[index].quarter > 0 && this.quarters[index].quarter < 1) {
 							this.schedule[i].classStatus = this.classStatus.PROGRESS;
-						}else {
+						} else {
 							this.schedule[i].classStatus = this.classStatus.INACTIVE;
 						}
 					}
 				}
 			}
 		},
-		publicOnSelectionChanged(numberMonth){
-			this.daysArrayByMonthCal(numberMonth.number +'/'+this.selectYear);
+		onSelectionChanged(numberMonth){
+			// format => MM/YYYY
+			this.daysArrayByMonthCal(numberMonth.number +'/'+ this.selectYear.value);
 		},
-		publicFilterProject (rows, terms) {
+		filterProject (rows, terms) {
+			//Search by projects
 			const lowerTerms = terms ? terms.toLowerCase() : '';
 			return rows.filter((row) => {
 				return row.nameProject.toLowerCase().includes(lowerTerms) || row.nameTeam.toLowerCase().includes(lowerTerms);
 			});
 		},
-		validate(val){
-			//validate value
-
-			if (val < 0 || val > 1) {
-				this.errorValue = true;
-				this.errorMessageValue = 'The value must be between 0 and 1!';
-				return false;
-			}
-
-		},
-		privateAllRecordsPerMonth(date){
+		async allRecordsPerMonth(date){
 			// Date of the first day of the current month
 			let startMonth = moment(date,'MM/YYYY').startOf('month').format('YYYY-MM-DD');
 			this.startMonth = startMonth;
@@ -271,11 +264,11 @@ export default {
 			let endMonth = moment(date,'MM/YYYY').endOf('month').format('YYYY-MM-DD');
 			this.endMonth = endMonth;
 			// Search all quarter/date
-			this.$store.dispatch('searchQuartersByDate',{startDate: startMonth, endDate: endMonth, id: this.$route.params.id});
-
+			await this.$store.dispatch('searchQuartersByDate',{startDate: startMonth, endDate: endMonth, id: this.$route.params.id});
+			// initialize colors for the table
 			this.controlQuarters();
 		},
-		publicListOfMonth(){
+		listOfMonth(){
 			for (let index = 0; index < 12; index++){
 				const column = {
 					'label': moment.months(index),
@@ -286,7 +279,9 @@ export default {
 				this.months.push(column);
 			}
 		},
-		privateOpenDaysPerMonth(){
+		openDaysPerMonth(){
+
+			// Calculating the number of working days in the month
 			let openDays = this.schedule.length;
 			for (let i = 0; i < this.schedule.length; i++) {
 				if (this.schedule[i].holiday) {
@@ -295,9 +290,10 @@ export default {
 			}
 			this.openDays = openDays;
 		},
-		// we manually trigger it (this is not needed if we
-		// don't skip Ajax calls hijacking)0.5
+
 		async OnQuarterChange(quarter, row, props) {
+			//Function to save quarter
+
 			if (quarter == '') {
 				quarter = 0
 			}
@@ -308,7 +304,7 @@ export default {
 				this.showNotif();
 
 			}	else if (quarter > 0 && quarter <= 1) {
-
+				//building the record object
 				let addRecord = {
 					quarter: parseFloat(quarter, 2),
 					date: day,
@@ -319,10 +315,12 @@ export default {
 					nameProject: props.row.nameProject,
 					nameTeam: props.row.nameTeam,
 				}
+				this.quarterChangeBar();
 				// request
 				await this.$store.dispatch('getAddRecord', addRecord);
 
 			}	else if (quarter == 0) {
+				//building the record object
 				let removeRecord = {
 					quarter: parseFloat(quarter, 2),
 					date: day,
@@ -333,94 +331,97 @@ export default {
 					nameProject: props.row.nameProject,
 					nameTeam: props.row.nameTeam,
 				}
+				this.quarterChangeBar();
 				// request
 				await this.$store.dispatch('getRemoveRecord', removeRecord);
-			}
 
-			 this.daysArrayByMonthCal(day);
+			}else {
+				this.showNotif();
+			}
+			await this.daysArrayByMonthCal(day);
+
 		},
 		// ajax Bar
-		OnQuarterChangeBar(){
+		quarterChangeBar(){
 			// const bar = this.$refs.bar
 			this.$refs.bar.start();
-			this.timer = setTimeout(() => {
-				if (this.$refs.bar) {
-					this.$refs.bar.stop()
-				}
-			}, Math.random());
+			if (this.$refs.bar) {
+				this.$refs.bar.stop()
+			}
 		},
 		showNotif () {
 			this.$q.notify({
 				color: 'negative',
 				textColor: "white",
 				position: 'center',
-				message : 'Oops incorrect value',
-				timeout: Math.random() * 3000,
+				message : 'Oops incorrect value. Please enter a value between 0 and 1.',
+				timeout: Math.random() * 1000,
 			})
 		},
 		daysArrayByMonthCal(date) {
 
-				this.loading=true;
-				//get the number of records per month
-				this.privateAllRecordsPerMonth(date);
-				// year recovery to calculate holidays
-				let year = moment(date,'MM/YYYY').format('YYYY');
-				// retrieving the holiday table
-				let arrDaysHolidays = holiday.getHolidays(year);
+			this.loading=true;
+			//get the number of records per month
+			this.allRecordsPerMonth(date);
+			// year recovery to calculate holidays
+			let year = moment(date,'MM/YYYY').format('YYYY');
+			// retrieving the holiday table
+			let arrDaysHolidays = holiday.getHolidays(year);
 
-				// Retrieving the current month/year to display it
-				this.currentMonthBtn = moment(date,'MM/YYYY').format('MMMM');
-				this.currentYearBtn = year;
+			// Retrieving the current month/year to display it
+			this.currentMonth = moment(date,'MM/YYYY').format('MMMM');
+			this.currentYearChange = year;
 
-				//resets the tables
-				this.schedule = [];
-				this.columns = [{
-					name: 'desc',
-					label: 'Projects',
-					align: 'left',
-				}];
+			//resets the tables
+			this.schedule = [];
+			this.columns = [{
+				name: 'desc',
+				label: 'Projects',
+				align: 'left',
+			}];
 
-				// Get the number of days in the month
-				let daysInMonth = moment(date,'MM/YYYY').daysInMonth();
-				const arrDays = [];
-				for(let i = 0; i < daysInMonth; i++) {
-					const day = moment(date,'MM/YYYY').date(i+1);
-					arrDays.push(day);
+			// Get the number of days in the month
+			let daysInMonth = moment(date,'MM/YYYY').daysInMonth();
+			const arrDays = [];
+			for(let i = 0; i < daysInMonth; i++) {
+				const day = moment(date,'MM/YYYY').date(i+1);
+				arrDays.push(day);
+			}
+			this.schedule = arrDays;
+			//Incrementing the date in a table
+			for (let index = 0; index < this.schedule.length; index++) {
+				const time = this.schedule[index];
+				const column = {
+					'name': time.startOf('day').valueOf(),
+					'align': 'center',
+					'label': time.format('DD/MM'),
+					'field': time.startOf('day').valueOf(),
+					'sortable': false,
 				}
-				this.schedule = arrDays;
-				//Incrementing the date in a table
-				for (let index = 0; index < this.schedule.length; index++) {
-					const time = this.schedule[index];
-					const column = {
-						'name': time.startOf('day').valueOf(),
-						'align': 'center',
-						'label': time.format('DD/MM'),
-						'field': time.startOf('day').valueOf(),
-						'sortable': false,
+				// Timestamp of the date so that the value of the row/date is unique
+				this.schedule[index].timestamp = time.startOf('day').valueOf();
+				this.schedule[index].classStatus = this.classStatus.INACTIVE;
+				for (var i = 0; i < arrDaysHolidays.length; i++) {
+					// search if dat is holiday or weekend
+					if (time.format('DD/MM/YY') === arrDaysHolidays[i]
+					|| time.format('dddd') === 'Sunday'
+					|| time.format('dddd') === 'Saturday' ) {
+						column.holiday = true;
+						this.schedule[index].holiday=true;
 					}
-					// Timestamp of the date so that the value of the row/date is unique
-					this.schedule[index].timestamp = time.startOf('day').valueOf();
-					this.schedule[index].classStatus = this.classStatus.INACTIVE;
-					for (var i = 0; i < arrDaysHolidays.length; i++) {
-						// search if dat is holiday or weekend
-						if (time.format('DD/MM/YY') === arrDaysHolidays[i]
-						|| time.format('dddd') === 'Sunday'
-						|| time.format('dddd') === 'Saturday' ) {
-							column.holiday = true;
-							this.schedule[index].holiday=true;
-						}
-					}
-					this.columns.push(column);
 				}
-				// open days
-				this.privateOpenDaysPerMonth();
+				this.columns.push(column);
+			}
+			// open days
+			this.openDaysPerMonth();
 
-				this.loading=false;
+			this.loading=false;
 		},
 	},
 }
 </script>
 <style scoped>
+
 .q-table td {
 	padding: 0px !important;
 }
@@ -451,9 +452,7 @@ export default {
 .hide{
 	display: none;
 }
-input {
-	text-align: center;
-}
+
 .center{
 	text-align: center !important;
 }

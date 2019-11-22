@@ -93,12 +93,10 @@ export default {
 }
 </script>
 <style scoped>
-
 th{
   text-align: left;
 }
 .title{
-
   text-align: center;
 }
 </style>

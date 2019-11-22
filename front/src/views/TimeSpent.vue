@@ -11,13 +11,14 @@
         :pagination.sync="pagination"
         :columns="columns"
         :filter="filter"
-        :filter-method="publicFilterProject"
+        :filter-method="filterProject"
         row-key="name">
       <template v-slot:top-left>
         <p class="bold">From {{startTrimester | formatDate }} at {{endTrimester | formatDate}}</p>
 
         <div class="q-gutter-md row">
           <q-select
+            class="col-md-2 col-4"
             rounded outlined
             label="Year"
             v-model="selectYear"
@@ -27,19 +28,20 @@
             ]"
           />
           <q-select
+          class="col-md-3 col-5"
           rounded outlined
           v-model="trimester"
           :options="trimesterOptions"
-          @input="publicSelectionTrimester($event,selectYear)"
+          @input="selectionTrimester($event,selectYear)"
           label="Trimester"
           />
-          <q-input outlined borderless dense debounce="300" v-model="filter" placeholder="Search">
+          <q-input class="col-md-4 col-10" outlined borderless dense debounce="300" v-model="filter" placeholder="Search">
             <template v-slot:append>
               <q-icon name="search" />
             </template>
           </q-input>
-          <q-btn :loading="downloadLoading" label="Export Excel" color="primary" @click="publicHandleDownload"/>
-          <q-btn color="primary" class="btn" :to="{name:'userList'}" label="Return"/>
+          <q-btn class="col-md-3 col-5" :loading="downloadLoading" label="Export Excel" color="primary" @click="handleDownload"/>
+          <q-btn color="primary" class="col-md-3 col-5" :to="{name:'userList'}" label="Return"/>
         </div>
       </template>
       <template v-slot:body="props" :props="props">
@@ -108,9 +110,9 @@ export default {
   }),
   mounted(){
     // Table of trimester
-    this.publicCreateTrimester();
+    this.createTrimester();
     // init trimester
-    this.publicInitTableTrimester();
+    this.initTableTrimester();
   },
   watch: {
     records: function (val) {
@@ -127,15 +129,13 @@ export default {
       this.data = data;
       //total all quarters
       this.records[0].allQuarters = _.sumBy(this.records, 'quarter');
-
     },
-
-
   },
   methods: {
-    publicHandleDownload() {
+    handleDownload() {
+      // Generate excel
       this.downloadLoading = true
-      import('@/Export2Excel').then(excel => {
+      import('@/services/Export2Excel').then(excel => {
         const tHeader = ['Trimester :'+ this.startTrimester + ' - ' + this.endTrimester,'Team','Project', 'Days','Total all days' ]
         const filterVal = ['','nameTeam', 'nameProject','quarter','allQuarters']
         const list = this.records
@@ -150,14 +150,10 @@ export default {
     },
     formatJson(filterVal, jsonData) {
       return jsonData.map(v => filterVal.map(j => {
-        if (j === 'timestamp') {
-          return parseTime(v[j])
-        } else {
           return v[j]
-        }
       }))
     },
-    publicInitTableTrimester(){
+    initTableTrimester(){
       let year = this.currentYear;
       let day = moment().format('YYYY-MM-DD');
       let trimester = 0;
@@ -174,29 +170,28 @@ export default {
 
       if (day>startJanuary && day<endMarch) {
         trimester = 1
-        this.publicSelectionTrimester(trimester,year);
+        this.selectionTrimester(trimester,year);
 
       }else if (day>startApril && day<endJune) {
         trimester = 2
-        this.publicSelectionTrimester(trimester,year);
+        this.selectionTrimester(trimester,year);
 
       }else if (day>startJuly && day<endSeptember) {
         trimester = 3
-        this.publicSelectionTrimester(trimester,year);
+        this.selectionTrimester(trimester,year);
 
       }else {
         trimester = 4
-        this.publicSelectionTrimester(trimester,year);
+        this.selectionTrimester(trimester,year);
       }
-
     },
-    publicFilterProject (rows, terms) {
+    filterProject (rows, terms) {
       const lowerTerms = terms ? terms.toLowerCase() : '';
       return rows.filter((row) => {
         return row.name.toLowerCase().includes(lowerTerms);
       });
     },
-    publicSelectionTrimester(trim,year){
+    selectionTrimester(trim,year){
       let trimester = 0;
 
       if (!trim.value) {
@@ -241,7 +236,7 @@ export default {
       // Search all quarter/Trimester
       this.$store.dispatch('searchQuartersTrimester',{startDate: this.startTrimester, endDate: this.endTrimester});
     },
-    publicCreateTrimester(){
+    createTrimester(){
       // Create Trimesters
       for (let index = 1; index < 5; index++){
         this.trimesterOptions.push({

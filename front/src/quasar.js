@@ -43,6 +43,7 @@ import {
   QItem,
   QItemSection,
   QItemLabel,
+  Screen,
 } from 'quasar'
 
 Vue.use(Quasar, {
@@ -88,5 +89,6 @@ Vue.use(Quasar, {
   plugins: {
     Dialog,
     Notify,
+    Screen,
   }
  })

@@ -50,7 +50,8 @@ public class TeamDAO {
 			throw new DALException("Problem - listTeam - TeamDAO - List :"+ listTeams+ " Request: " +pstmt+ e.getMessage());
 		} finally {
 			try {
-
+				if (rs != null)
+					rs.close();
 				if (pstmt != null)
 					pstmt.close();
 				if (cnx != null)
@@ -96,7 +97,8 @@ public class TeamDAO {
 				throw new DALException("Problem - listTeamHisProject - TeamDAO - Request : "+ pstmt+ " " + e.getMessage());
 			} finally {
 				try {
-
+					if (rs != null)
+						rs.close();
 					if (pstmt != null)
 						pstmt.close();
 					if (cnx != null)
@@ -134,6 +136,8 @@ public class TeamDAO {
 						throw new DALException("Problem - search teams By Name - TeamDAO - Request : "+pstmt+ " " + e.getMessage());
 					} finally {
 						try {
+							if (rs != null)
+								rs.close();
 							if (pstmt != null)
 								pstmt.close();
 							if (cnx != null)
@@ -175,6 +179,8 @@ public class TeamDAO {
 				throw new DALException("Problem - search teams By Id - TeamDAO - Request :"+ pstmt+ " Team: " + team + e.getMessage());
 			} finally {
 				try {
+					if (rs != null)
+						rs.close();
 					if (pstmt != null)
 						pstmt.close();
 					if (cnx != null)

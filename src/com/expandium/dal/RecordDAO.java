@@ -21,13 +21,19 @@ public class RecordDAO {
 	 * records-related queries
 	 */
 	
-	private final static String LIST_RECORDS = "SELECT * FROM Records INNER JOIN Projects ON Records.Projects_idProjects = Projects.idProjects ORDER BY Projects.name;";
-	private final static String INSERT_RECORD = "insert into Records(quarters,date,timestamp,Users_idUsers,Projects_idProjects, Teams_idTeams) values (?,?,?,?,?,?)ON DUPLICATE KEY UPDATE quarters=?;";
+	private final static String LIST_RECORDS = "SELECT * FROM Records "
+			+ "INNER JOIN Projects ON Records.Projects_idProjects = Projects.idProjects ORDER BY Projects.name;";
+	private final static String INSERT_RECORD = "insert into Records(quarters,date,timestamp,Users_idUsers,Projects_idProjects, Teams_idTeams)"
+			+ " values (?,?,?,?,?,?)ON DUPLICATE KEY UPDATE quarters=?;";
 	private final static String DELETE_RECORD = "DELETE FROM Records WHERE date =? AND Users_idUsers=? AND Projects_idProjects=? AND Teams_idTeams=?;";
 	private final static String SEARCH_RECORDS_PER_DATES_USER = "SELECT * FROM Records WHERE Users_idUsers=? AND date BETWEEN ? AND ?";
-	private final static String SEARCH_QUARTER_BY_DATE = "SELECT date,timestamp, SUM(quarters) AS quarters FROM Records WHERE Users_idUsers=? AND date BETWEEN ? AND ? GROUP BY date, timestamp;";
-	private final static String SEARCH_ALL_QUARTER_BY_TRIMESTER = "SELECT SUM(Records.quarters) AS quarters, Projects.name AS nameProject, Projects_has_Teams.Teams_name FROM Records LEFT JOIN Projects ON Records.Projects_idProjects = Projects.idProjects LEFT JOIN Projects_has_Teams ON Projects_has_Teams.Projects_idProjects = Projects.idProjects WHERE Records.date BETWEEN ? AND ? GROUP BY Projects.name, Projects_has_Teams.Teams_name;";
-	// Search All Projects
+	private final static String SEARCH_QUARTER_BY_DATE = "SELECT date,timestamp, SUM(quarters) AS quarters FROM Records "
+			+ "WHERE Users_idUsers=? AND date BETWEEN ? AND ? GROUP BY date, timestamp;";
+	private final static String SEARCH_ALL_QUARTER_BY_TRIMESTER = "SELECT SUM(Records.quarters) AS quarters, Projects.name AS nameProject, Projects_has_Teams.Teams_name "
+			+ "FROM Records LEFT JOIN Projects ON Records.Projects_idProjects = Projects.idProjects "
+			+ "INNER JOIN Projects_has_Teams ON Projects_has_Teams.Projects_idProjects = Projects.idProjects WHERE Records.date BETWEEN ? AND ? "
+			+ "GROUP BY Projects.name, Projects_has_Teams.Teams_name;";
+	// Search All Records
 			public static ArrayList<Record> findAll() throws DALException {
 				Connection cnx = null;
 				PreparedStatement pstmt = null;
@@ -55,11 +61,12 @@ public class RecordDAO {
 						listRecords.add(record);
 					}
 				} catch (SQLException e) {
-
+					
 					throw new DALException("Problem - listRecords - RecordDAO - List : "+listRecords+" " + e.getMessage());
 				} finally {
 					try {
-
+						if (rs != null)
+							rs.close();
 						if (pstmt != null)
 							pstmt.close();
 						if (cnx != null)
@@ -100,9 +107,7 @@ public class RecordDAO {
 							throw new SQLException("Can not create Record, no ID obtained.");
 						}
 					}
-
 				} catch (SQLException e) {
-
 					throw new DALException("Problem - createRecord - RecordDAO - Request : "+pstmt+ " - Record : " + record + e.getMessage());
 				} finally {
 					try {
@@ -192,7 +197,8 @@ public class RecordDAO {
 					throw new DALException("Problem - SearchRecord - RecordDAO - Request : "+ pstmt + e.getMessage());
 				}finally {
 					try {
-
+						if (rs != null)
+							rs.close();
 						if (pstmt != null)
 							pstmt.close();
 						if (cnx != null)
@@ -236,7 +242,8 @@ public class RecordDAO {
 					throw new DALException("Problem - SearchQuarter - RecordDAO - Request : "+pstmt+ " " + e.getMessage());
 				}finally {
 					try {
-
+						if (rs != null)
+							rs.close();
 						if (pstmt != null)
 							pstmt.close();
 						if (cnx != null)
@@ -277,7 +284,8 @@ public class RecordDAO {
 					throw new DALException("Problem - SearchTrimester - RecordDAO - Request : "+ pstmt + e.getMessage());
 				}finally {
 					try {
-
+						if (rs != null)
+							rs.close();
 						if (pstmt != null)
 							pstmt.close();
 						if (cnx != null)

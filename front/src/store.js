@@ -1,11 +1,9 @@
-//import _ from 'lodash';
 import Vue from 'vue'
 import Vuex from 'vuex'
+import Api from '@/services/Api'
 Vue.use(Vuex)
-const URL = '/craman-api'
 export default new Vuex.Store({
   state: {
-    users: [],
     user: {},
     teams:[],
     projects:[],
@@ -15,9 +13,6 @@ export default new Vuex.Store({
   },
 
   mutations: {
-    userList(state, users) {
-      state.users = users;
-    },
     user(state, user) {
       state.user = user;
     },
@@ -41,87 +36,58 @@ export default new Vuex.Store({
     },
   },
   actions: {
+
     searchOneUser({ commit }, id) {
-      Vue.axios({ // TODO put in requestService
-        'method': 'GET',
-        'url': URL+'/users/' + id,
-      }).then((response) => {
+      Api().get('/users/'+id).then((response) => {
         commit('user', response.data)
       });
     },
     searchAllTeam({ commit }) {
-      Vue.axios({ // TODO put in requestService
-        'method': 'GET',
-        'url': URL+'/teams/'
-      }).then((response) => {
+      Api().get('/teams/').then((response) => {
         commit('teamList', response.data)
       });
-
     },
 
     searchAllTeamHisProject({ commit }) {
-      Vue.axios({ // TODO put in requestService
-        'method': 'GET',
-        'url': URL+'/teams/teamsProject'
-      }).then((response) => {
+      Api().get('/teams/teamsProject').then((response) => {
         commit('teamList', response.data)
       });
-
     },
     searchAllProject({ commit }) {
-      Vue.axios({ // TODO put in requestService
-        'method': 'GET',
-        'url': URL+'/projects'
-      }).then((response) => {
+      Api().get('/projects').then((response) => {
         commit('projectList', response.data)
       });
     },
     searchRecordByDate({ commit }, params) {
       const { startDate, endDate, id } = params;
-      Vue.axios({  // TODO put in requestService
-        'method': 'GET',
-        'url': URL+'/records/'+startDate+'/'+endDate+'/'+id,
-      }).then((response) => {
+      Api().get('/records/'+startDate+'/'+endDate+'/'+id).then((response) => {
         commit('recordsList', response.data)
       });
     },
     searchQuartersByDate({ dispatch, commit }, params) {
       const { startDate, endDate, id } = params;
-      Vue.axios({ // TODO put in requestService
-        'method': 'GET',
-        'url': URL+'/records/quarters/'+startDate+'/'+endDate+'/'+id,
-      }).then((response) => {
+      Api().get('/records/quarters/'+startDate+'/'+endDate+'/'+id).then((response) => {
         commit('quartersList', response.data);
         dispatch('searchRecordByDate', params);
       });
     },
     searchQuartersTrimester({ commit }, params) {
       const { startDate, endDate } = params;
-      Vue.axios({ // TODO put in requestService
-        'method': 'GET',
-        'url': URL+'/records/trimester/'+startDate+'/'+endDate,
-      }).then((response) => {
+      Api().get('/records/trimester/'+startDate+'/'+endDate).then((response) => {
         commit('recordsList', response.data)
       });
     },
     async getAddRecord({commit},addRecord) {
-      Vue.axios({ // TODO put in requestService
-        'method': 'post',
-        'data': addRecord,
-        'url': URL+'/records',
-      }).then(() => {
+      Api().post('/records',addRecord ).then(() => {
         commit('addRecord', addRecord)
+      }).catch(function () {
+        alert ('Identical value')
       });
     },
     async getRemoveRecord({commit},removeRecord) {
-      Vue.axios({ // TODO put in requestService
-        'method': 'delete',
-        'data': removeRecord,
-        'url': URL+'/records',
-      }).then(() => {
+      Api().delete('/records',{data : removeRecord} ).then(() => {
         commit('removeRecord', removeRecord)
       });
     },
-
   },
 })

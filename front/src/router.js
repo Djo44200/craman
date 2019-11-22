@@ -1,9 +1,9 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import UserList from '@/views/UserList.vue'
-import ShowUserCra from '@/views/UserCra.vue' // TODO rename component
-import AddProject from '@/views/AddProject.vue'
-import AddUser from '@/views/AddUser.vue'
+import ShowUserCra from '@/views/UserCra.vue'
+import FormProject from '@/views/FormProject.vue'
+import FormUser from '@/views/FormUser.vue'
 import TimeSpent from '@/views/TimeSpent.vue'
 import NotFound from '@/views/404.vue'
 
@@ -18,41 +18,31 @@ export default new Router({
     },
     {
       path: '/user/:id',
+      name: 'userCra',
       props: true,
-      // route level code-splitting
-      // this generates a separate chunk (about.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
       component: ShowUserCra
     },
     {
       path: '/formProject',
+      name: 'formProject',
       props: true,
-      // route level code-splitting
-      // this generates a separate chunk (about.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: AddProject
+      component: FormProject
     },
     {
       path: '/formUser',
+      name: 'formUser',
       props: true,
-      // route level code-splitting
-      // this generates a separate chunk (about.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: AddUser
+      component: FormUser
     },
     {
       path: '/timeSpent',
+      name: 'timeSpent',
       props: true,
-      // route level code-splitting
-      // this generates a separate chunk (about.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
       component: TimeSpent
     },
     {
       path: '*',
-      // route level code-splitting
-      // this generates a separate chunk (about.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
+      name: 'notFound',
       component: NotFound
     },
   ]

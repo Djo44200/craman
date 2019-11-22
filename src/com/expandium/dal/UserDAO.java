@@ -49,7 +49,8 @@ public class UserDAO {
 			throw new DALException("Problem - listUser - UserDAO - List : "+listUsers+ " " + e.getMessage());
 		} finally {
 			try {
-
+				if (rs != null)
+					rs.close();
 				if (pstmt != null)
 					pstmt.close();
 				if (cnx != null)
@@ -89,6 +90,8 @@ public class UserDAO {
 			throw new DALException("Problem - search user - UserDAO - Request : "+pstmt+ " User : "+user+ " " + e.getMessage());
 		} finally {
 			try {
+				if (rs != null)
+					rs.close();
 				if (pstmt != null)
 					pstmt.close();
 				if (cnx != null)

@@ -11,6 +11,7 @@
     <sourceDirectory>src</sourceDirectory>
     <plugins>
       <plugin>
+      		<!-- Compilation of Java sources -->
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.8.0</version>
         <configuration>
@@ -19,6 +20,8 @@
         </configuration>
       </plugin>
       <plugin>
+      		<!-- Collecting all artifact dependencies, classes 
+      		and resources of the web application and packaging them into a web application archive. -->
         <artifactId>maven-war-plugin</artifactId>
         <version>3.2.1</version>
         <configuration>
@@ -28,6 +31,7 @@
     </plugins>
   </build>
   <dependencies>
+  				<!-- API implementation -->
   	<dependency>
   		<groupId>org.glassfish.jersey.containers</groupId>
   		<artifactId>jersey-container-servlet</artifactId>
@@ -54,6 +58,7 @@
   		<version>2.29</version>
   	</dependency>
   	<dependency>
+  		<!-- Add JSON dependency -->
     	<groupId>org.json</groupId>
     	<artifactId>json</artifactId>
     	<version>20190722</version>

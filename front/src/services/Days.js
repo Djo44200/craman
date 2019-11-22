@@ -2,6 +2,7 @@ import moment from 'moment';
 export default {
 
   getHolidays (an) {
+    // an => YYYY
     // Calculation of holiday dates
     //https://codes-sources.commentcamarche.net/source/16245-calcul-des-jours-feries
     let newYear = new Date(an, "00", "01")

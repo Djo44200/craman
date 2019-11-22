@@ -11,29 +11,14 @@
 
 
 	</welcome-file-list>
-	
 	<servlet>
-		<description></description>
-		<display-name>AfficherErreur</display-name>
-		<servlet-name>AfficherErreur</servlet-name>
-		<jsp-file>/WEB-INF/erreur/erreur.jsp</jsp-file>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>AfficherErreur</servlet-name>
-		<url-pattern>/erreurPage</url-pattern>
-	</servlet-mapping>
-
-	<servlet>
-		
 	<servlet-name>RestApplication</servlet-name>
     <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
     <init-param>
         <param-name>jersey.config.server.provider.packages</param-name>
         <param-value>com.expandium.rest</param-value>
     </init-param>
-    
     <load-on-startup>1</load-on-startup>
-    
 	</servlet>
 	
 	

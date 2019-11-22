@@ -47,11 +47,11 @@ public class ProjectDAO {
 
 				}
 			} catch (SQLException e) {
-
 				throw new DALException("Problem - listProjects - ProjectDAO - listProjects : "+listProjects+" "+ e.getMessage());
 			} finally {
 				try {
-
+					if (rs != null)
+						rs.close();
 					if (pstmt != null)
 						pstmt.close();
 					if (cnx != null)
@@ -86,6 +86,8 @@ public class ProjectDAO {
 						throw new DALException("Problem - search project By name - ProjectDAO - Request : "+pstmt+ " " + e.getMessage());
 					} finally {
 						try {
+							if (rs != null)
+								rs.close();
 							if (pstmt != null)
 								pstmt.close();
 							if (cnx != null)
