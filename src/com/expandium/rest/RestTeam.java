@@ -66,7 +66,7 @@ public class RestTeam {
 		boolean result = TeamDAO.createTeam(team);
 		
 		
-		return Response.status(Status.CREATED).build();
+		return Response.ok().header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD").build();
 	}
 	
 

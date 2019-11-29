@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : localhost
--- Généré le :  jeu. 14 nov. 2019 à 10:04
+-- Généré le :  ven. 15 nov. 2019 à 11:00
 -- Version du serveur :  8.0.18
 -- Version de PHP :  7.3.11-1~deb10u1
 
@@ -21,8 +21,6 @@ SET time_zone = "+00:00";
 --
 -- Base de données :  `project_CRA`
 --
-CREATE DATABASE IF NOT EXISTS `project_CRA` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
-USE `project_CRA`;
 
 -- --------------------------------------------------------
 
@@ -30,11 +28,10 @@ USE `project_CRA`;
 -- Structure de la table `Projects`
 --
 
-CREATE TABLE IF NOT EXISTS `Projects` (
-  `idProjects` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(500) NOT NULL,
-  PRIMARY KEY (`idProjects`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+CREATE TABLE `Projects` (
+  `idProjects` int(11) NOT NULL,
+  `name` varchar(500) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Déchargement des données de la table `Projects`
@@ -145,14 +142,11 @@ INSERT INTO `Projects` (`idProjects`, `name`) VALUES
 -- Structure de la table `Projects_has_Teams`
 --
 
-CREATE TABLE IF NOT EXISTS `Projects_has_Teams` (
+CREATE TABLE `Projects_has_Teams` (
   `Projects_idProjects` int(11) NOT NULL,
   `Teams_idTeams` int(11) NOT NULL,
-  `Teams_name` varchar(255) NOT NULL,
-  PRIMARY KEY (`Projects_idProjects`,`Teams_idTeams`,`Teams_name`),
-  KEY `fk_Projects_has_Teams_Teams1_idx` (`Teams_idTeams`,`Teams_name`),
-  KEY `fk_Projects_has_Teams_Projects1_idx` (`Projects_idProjects`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `Teams_name` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Déchargement des données de la table `Projects_has_Teams`
@@ -275,18 +269,15 @@ INSERT INTO `Projects_has_Teams` (`Projects_idProjects`, `Teams_idTeams`, `Teams
 -- Structure de la table `Records`
 --
 
-CREATE TABLE IF NOT EXISTS `Records` (
-  `idRecords` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `Records` (
+  `idRecords` int(11) NOT NULL,
   `quarters` float NOT NULL,
   `date` date NOT NULL,
   `timestamp` bigint(20) NOT NULL,
   `Users_idUsers` int(11) NOT NULL,
   `Projects_idProjects` int(11) NOT NULL,
-  PRIMARY KEY (`idRecords`),
-  UNIQUE KEY `Record` (`date`,`Users_idUsers`,`Projects_idProjects`),
-  KEY `fk_Records_Users_idx` (`Users_idUsers`) USING BTREE,
-  KEY `fk_Records_Projects1_idx` (`Projects_idProjects`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `Teams_idTeams` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -294,11 +285,10 @@ CREATE TABLE IF NOT EXISTS `Records` (
 -- Structure de la table `Teams`
 --
 
-CREATE TABLE IF NOT EXISTS `Teams` (
-  `idTeams` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) NOT NULL,
-  PRIMARY KEY (`idTeams`,`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+CREATE TABLE `Teams` (
+  `idTeams` int(11) NOT NULL,
+  `name` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Déchargement des données de la table `Teams`
@@ -319,12 +309,80 @@ INSERT INTO `Teams` (`idTeams`, `name`) VALUES
 -- Structure de la table `Users`
 --
 
-CREATE TABLE IF NOT EXISTS `Users` (
-  `idUsers` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `Users` (
+  `idUsers` int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
-  `firstName` varchar(255) NOT NULL,
-  PRIMARY KEY (`idUsers`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `firstName` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+--
+-- Index pour les tables déchargées
+--
+
+--
+-- Index pour la table `Projects`
+--
+ALTER TABLE `Projects`
+  ADD PRIMARY KEY (`idProjects`);
+
+--
+-- Index pour la table `Projects_has_Teams`
+--
+ALTER TABLE `Projects_has_Teams`
+  ADD PRIMARY KEY (`Projects_idProjects`,`Teams_idTeams`,`Teams_name`),
+  ADD KEY `fk_Projects_has_Teams_Teams1_idx` (`Teams_idTeams`,`Teams_name`),
+  ADD KEY `fk_Projects_has_Teams_Projects1_idx` (`Projects_idProjects`);
+
+--
+-- Index pour la table `Records`
+--
+ALTER TABLE `Records`
+  ADD PRIMARY KEY (`idRecords`),
+  ADD UNIQUE KEY `Record` (`date`,`Users_idUsers`,`Projects_idProjects`,`Teams_idTeams`) USING BTREE,
+  ADD KEY `fk_Records_Users_idx` (`Users_idUsers`) USING BTREE,
+  ADD KEY `fk_Records_Projects1_idx` (`Projects_idProjects`) USING BTREE,
+  ADD KEY `Teams_idTeams` (`Teams_idTeams`) USING BTREE;
+
+--
+-- Index pour la table `Teams`
+--
+ALTER TABLE `Teams`
+  ADD PRIMARY KEY (`idTeams`,`name`);
+
+--
+-- Index pour la table `Users`
+--
+ALTER TABLE `Users`
+  ADD PRIMARY KEY (`idUsers`);
+
+--
+-- AUTO_INCREMENT pour les tables déchargées
+--
+
+--
+-- AUTO_INCREMENT pour la table `Projects`
+--
+ALTER TABLE `Projects`
+  MODIFY `idProjects` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT pour la table `Records`
+--
+ALTER TABLE `Records`
+  MODIFY `idRecords` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT pour la table `Teams`
+--
+ALTER TABLE `Teams`
+  MODIFY `idTeams` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT pour la table `Users`
+--
+ALTER TABLE `Users`
+  MODIFY `idUsers` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- Contraintes pour les tables déchargées
@@ -341,6 +399,7 @@ ALTER TABLE `Projects_has_Teams`
 -- Contraintes pour la table `Records`
 --
 ALTER TABLE `Records`
+  ADD CONSTRAINT `Records_ibfk_1` FOREIGN KEY (`Teams_idTeams`) REFERENCES `Teams` (`idTeams`),
   ADD CONSTRAINT `fk_Records_Projects1` FOREIGN KEY (`Projects_idProjects`) REFERENCES `Projects` (`idProjects`),
   ADD CONSTRAINT `fk_Records_Users` FOREIGN KEY (`Users_idUsers`) REFERENCES `Users` (`idUsers`);
 COMMIT;

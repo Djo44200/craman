@@ -3,13 +3,17 @@ package com.expandium.rest;
 import java.sql.Date;
 import java.util.ArrayList;
 
+import javax.annotation.security.PermitAll;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -72,21 +76,31 @@ public class RestRecord {
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response createRecord(Record record) throws DALException {
+	public Response createRecord(Record record, @HeaderParam("Access-Control-Request-Headers") @Context HttpServletResponse servlerResponse) throws DALException {
 		// The service create a record, return a record id.
-		
+	
 		RecordDAO.createRecord(record);
 		
-		return Response.status(Status.CREATED).build();
-	}
+		servlerResponse.addHeader("Allow-Control-Allow-Methods", "POST,GET,OPTIONS");
+        servlerResponse.addHeader("Access-Control-Allow-Credentials", "true");
+        servlerResponse.addHeader("Access-Control-Allow-Origin", "*");
+        servlerResponse.addHeader("Access-Control-Allow-Headers", "Content-Type,X-Requested-With");
+        servlerResponse.addHeader("Access-Control-Max-Age", "60");
+    	return Response.status(Status.NO_CONTENT).header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD").build();
+    	}
 	
 	@DELETE
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response deleteMaRessource(Record record) throws DALException {
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response deleteMaRessource(Record record,@HeaderParam("Access-Control-Request-Headers") @Context HttpServletResponse servlerResponse) throws DALException {
 		// This service delete a record id quarter = 0
 		RecordDAO.deleteRecord(record);
-		return Response.status(Status.NO_CONTENT).build();
-	}
+		servlerResponse.addHeader("Allow-Control-Allow-Methods", "POST,GET,OPTIONS,DELETE");
+        servlerResponse.addHeader("Access-Control-Allow-Credentials", "true");
+        servlerResponse.addHeader("Access-Control-Allow-Origin", "*");
+        servlerResponse.addHeader("Access-Control-Allow-Headers", "Content-Type,X-Requested-With");
+        servlerResponse.addHeader("Access-Control-Max-Age", "60");
+    	return Response.status(Status.NO_CONTENT).header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD").build();	}
 	
 	
 

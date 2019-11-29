@@ -62,12 +62,13 @@ export default {
       // send a POST request
       axios({
         method: 'post',
-        url: '/craman-api/users',
+        url: '/api/users',
         data: {
           userName: this.name,
           userFirstName: this.firstName,
         },
-        headers: {'Accept': 'application/json'},
+        headers: {'Accept': 'application/json','Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS, HEAD'},
           }).then(function (reponse) {
             alert('user created') // TODO quasar notify
             console.error(reponse);

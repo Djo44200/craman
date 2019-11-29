@@ -80,7 +80,8 @@ export default new Vuex.Store({
     async getAddRecord({commit},addRecord) {
       Api().post('/records',addRecord ).then(() => {
         commit('addRecord', addRecord)
-      }).catch(function () {
+      }).catch(function (error) {
+        console.log(error);
         alert ('Identical value')
       });
     },

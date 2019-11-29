@@ -36,6 +36,7 @@
     "babel-plugin-transform-imports": "1.5.0",
     "eslint": "^5.16.0",
     "eslint-plugin-vue": "^5.0.0",
+    "http-proxy-middleware": "^0.20.0",
     "less": "^3.0.4",
     "less-loader": "^5.0.0",
     "node-sass": "^4.13.0",

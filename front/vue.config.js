@@ -7,7 +7,13 @@ module.exports = {
       treeShake: true
     }
   },
-
+  devServer: {
+    proxy: 'http://localhost:8082/craman',
+    auth: {
+      username: '',
+      password: ''
+    }
+  },
   transpileDependencies: [
     /[\\\/]node_modules[\\\/]quasar[\\\/]/
   ]
