@@ -86,7 +86,7 @@ public class RecordDAO {
 				boolean result = false;
 				PreparedStatement pstmt = null;
 				try {
-					
+					//Open connection and request
 					cnx = DBConnection.connect();
 					pstmt = cnx.prepareStatement(INSERT_RECORD, Statement.RETURN_GENERATED_KEYS);
 					pstmt.setFloat(1, record.getQuarter());
@@ -98,18 +98,20 @@ public class RecordDAO {
 					pstmt.setFloat(7, record.getQuarter());
 					pstmt.executeUpdate();
 					result = true;
-
+					//Generate Key
 					try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
 						if (generatedKeys.next()) {
 							record.setIdRecord(generatedKeys.getInt(1));
 							result = false;
 						} else {
+							// If Error
 							throw new SQLException("Can not create Record, no ID obtained.");
 						}
 					}
 				} catch (SQLException e) {
 					throw new DALException("Problem - createRecord - RecordDAO - Request : "+pstmt+ " - Record : " + record + e.getMessage());
 				} finally {
+					// Close Connection
 					try {
 						if (pstmt != null)
 							pstmt.close();

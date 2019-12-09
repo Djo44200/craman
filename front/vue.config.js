@@ -8,11 +8,7 @@ module.exports = {
     }
   },
   devServer: {
-    proxy: 'http://localhost:8082/craman',
-    auth: {
-      username: '',
-      password: ''
-    }
+    proxy: 'http://localhost:8083/craman',
   },
   transpileDependencies: [
     /[\\\/]node_modules[\\\/]quasar[\\\/]/
